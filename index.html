@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub README Generator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #151B23;
+            color: #d1d7e0;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+        }
+        input, button {
+            display: block;
+            margin: 10px 0;
+            color: inherit;
+            padding: 4px 8px;
+        }
+        button:hover, button:active {
+            cursor: pointer;
+            background-color: #2f3741;
+        }
+
+        h3 {
+            margin-bottom: 0;
+        }
+        input {
+            margin-top: 2px;
+            color: #9198a1;
+        }
+
+        #output {
+            min-height: 400px;
+            color: #9198a1;
+        }
+
+        input, #output, button {
+            background-color: #212830;
+            border: none; border-radius: 4px;
+            outline: none;
+        }
+        input:focus-visible, #output:focus-visible, button:focus-visible {
+            outline: solid 2px #9198a1;
+        }
+
+        hr {
+            margin-top: 16px;
+            border: solid 1px #212830;
+        }
+    </style>
+</head>
+<body>
+<h2>GitHub README Generator</h2>
+<label>Title: <input type="text" id="title" autocomplete="off"></label>
+<label>Subtitle: <input type="text" id="subtitle" autocomplete="off"></label>
+<label>Short Description: <input type="text" id="description" autocomplete="off"></label>
+
+<hr>
+
+<h3>Features</h3>
+<div id="features"></div>
+
+<hr>
+
+<h3>Planned Features</h3>
+<div id="planned"></div>
+
+<hr>
+
+<h3>Known Bugs</h3>
+<div id="bugs"></div>
+
+<hr>
+
+<h3>Libraries Used</h3>
+<div id="libraries"></div>
+
+<h3>Fonts Used</h3>
+<div id="fonts"></div>
+
+<h3>Assets Used</h3>
+<div id="assets"></div>
+
+<h3>Special Thanks</h3>
+<div id="thanks"></div>
+
+<hr>
+
+<button onclick="generateMarkdown()">
+    <div style="padding: 4px">Generate Markdown</div>
+</button>
+<textarea id="output" readonly></textarea>
+
+<script>
+    function addInput(sectionId) {
+        const section = document.getElementById(sectionId);
+        const inputs = section.querySelectorAll("input");
+
+        if (inputs.length === 0 || inputs[inputs.length - 1].value !== "") {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.setAttribute("autocomplete", "off");
+            input.setAttribute("autocorrect", "off");
+            input.setAttribute("autocapitalize", "off");
+            input.setAttribute("spellcheck", "false");
+            input.oninput = function () {
+                if (!this.nextElementSibling) addInput(sectionId);
+            };
+            input.onblur = function () {
+                if (this.value === "" && this !== section.firstElementChild) {
+                    this.remove();
+                }
+            };
+            input.onfocus = function () {
+                if (!this.nextElementSibling) addInput(sectionId);
+            };
+            section.appendChild(input);
+        }
+    }
+
+    function getValues(sectionId) {
+        return Array.from(document.getElementById(sectionId).querySelectorAll("input"))
+            .map(input => input.value.trim())
+            .filter(value => value);
+    }
+
+    function generateMarkdown() {
+        const title = document.getElementById("title").value.trim() || "Title";
+        const subtitle = document.getElementById("subtitle").value.trim() || "Subtitle";
+        const description = document.getElementById("description").value.trim() || "Short Desc";
+        const features = getValues("features");
+        const planned = getValues("planned");
+        const bugs = getValues("bugs");
+        const libraries = getValues("libraries");
+        const fonts = getValues("fonts");
+        const assets = getValues("assets");
+        const thanks = getValues("thanks");
+
+        let markdown = `<br>\n\n<p align="center">\n  <img src="https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoDark.png?raw=true#gh-light-mode-only" alt="WebInstax Logo Dark" height="165">\n  <img src="https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoLight.png?raw=true#gh-dark-mode-only" alt="WebInstax Logo Light" height="165">\n</p>\n\n<h3 align="center">${title} | ${subtitle}</h3>\n\n<p align="center">\n  ${description}\n  <br>\n  <a href="https://ssambender.github.io/WebInstax/"><strong>Try it Online »</strong></a>\n  <br>\n</p>\n\n___\n`;
+
+        if (features.length) {
+            markdown += `\n### Features\n` + features.map(f => `- ${f}`).join("\n") + "\n\n---\n\n";
+        }
+
+        if (planned.length) {
+            markdown += `\n### Planned features:\n` + planned.map(p => `- [ ] ${p}`).join("\n") + "\n\n---\n\n";
+        }
+
+        markdown += `\n![Project Image](https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoLight.png?raw=true)\n\n---\n\n`;
+
+        if (bugs.length) {
+            markdown += `\n### Known bugs:\n` + bugs.map(b => `- [ ] ${b}`).join("\n") + "\n\n_Please report any bugs you find!_\n\n---\n\n";
+        }
+
+        if (libraries.length) {
+            markdown += `\n### Libraries used:\n` + libraries.map(l => `- ${l}`).join("\n") + "\n";
+        }
+
+        if (fonts.length) {
+            markdown += `\n### Fonts used:\n` + fonts.map(f => `- ${f}`).join("\n") + "\n";
+        }
+
+        if (assets.length) {
+            markdown += `\n### Assets used:\n` + assets.map(a => `- ${a}`).join("\n") + "\n";
+        }
+
+        if (thanks.length) {
+            markdown += `\n### Special thanks:\n` + thanks.map(t => `- ${t}`).join("\n");
+        }
+
+        document.getElementById("output").value = markdown;
+    }
+
+    addInput("features");
+    addInput("planned");
+    addInput("bugs");
+    addInput("libraries");
+    addInput("fonts");
+    addInput("assets");
+    addInput("thanks");
+</script>
+</body>
+</html>
