@@ -26,9 +26,10 @@ ___
 - [ ] Add a demo images section
 - [ ] Add a realtime .md preview
 - [X] Add a "copy md to clipboard" button
-- [ ] Add paste buttons next to URL inputs
+- [X] Add paste buttons next to URL inputs
 - [ ] Optional checking of boxes in checklists
 - [X] Optimized for mobile
+- [X] Message when text is copied
 
 _Feel free to submit pull requests!_
 
