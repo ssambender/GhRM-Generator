@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub README Generator</title>
+    <link rel="icon" href="GhRM.png">
     <style>
-        body { 
+        body {
             font-family: Arial, sans-serif;
             margin: 20px;
             background-color: #151B23;
@@ -56,9 +57,24 @@
 </head>
 <body>
 <h2>GitHub README Generator</h2>
+
+<div style="color: #9198a1;">Simple README generator for GitHub projects.<br><br>
+    Fill out as many or as few of the sections as desired,<br>
+    any unused sections will be omitted from final page.
+</div>
+<br>
+
 <label>Title: <input type="text" id="title" autocomplete="off"></label>
 <label>Subtitle: <input type="text" id="subtitle" autocomplete="off"></label>
 <label>Short Description: <input type="text" id="description" autocomplete="off"></label>
+<label>Site URL: <input type="text" id="siteurl" autocomplete="off"></label>
+
+<hr>
+
+<h3>Logo Images</h3>
+<br><i style="color: #9198a1;">(If only one image is provided, it will be used for both light & dark mode)</i><br><br>
+<label>Light Mode Logo URL: <input type="text" id="logoLight" autocomplete="off"></label>
+<label>Dark Mode Logo URL: <input type="text" id="logoDark" autocomplete="off"></label>
 
 <hr>
 
@@ -131,8 +147,13 @@
 
     function generateMarkdown() {
         const title = document.getElementById("title").value.trim() || "Title";
-        const subtitle = document.getElementById("subtitle").value.trim() || "Subtitle";
-        const description = document.getElementById("description").value.trim() || "Short Desc";
+        const subtitle = document.getElementById("subtitle").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const siteUrl = document.getElementById("siteurl").value.trim();
+
+        const logoLight = document.getElementById("logoLight").value.trim();
+        const logoDark = document.getElementById("logoDark").value.trim();
+
         const features = getValues("features");
         const planned = getValues("planned");
         const bugs = getValues("bugs");
@@ -141,17 +162,41 @@
         const assets = getValues("assets");
         const thanks = getValues("thanks");
 
-        let markdown = `<br>\n\n<p align="center">\n  <img src="https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoDark.png?raw=true#gh-light-mode-only" alt="WebInstax Logo Dark" height="165">\n  <img src="https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoLight.png?raw=true#gh-dark-mode-only" alt="WebInstax Logo Light" height="165">\n</p>\n\n<h3 align="center">${title} | ${subtitle}</h3>\n\n<p align="center">\n  ${description}\n  <br>\n  <a href="https://ssambender.github.io/WebInstax/"><strong>Try it Online »</strong></a>\n  <br>\n</p>\n\n___\n`;
+        let logoMarkdown = '';
+        if (logoLight || logoDark) {
+            const altText = `${title} Logo`;
+            if (logoLight && logoDark) {
+                logoMarkdown = `<img src="${logoLight}#gh-light-mode-only" alt="${altText}" height="165">\n <img src="${logoDark}#gh-dark-mode-only" alt="${altText}" height="165">`;
+            } else if (logoLight) {
+                logoMarkdown = `<img src="${logoLight}" alt="${altText}" height="165">`;
+            } else {
+                logoMarkdown = `<img src="${logoDark}" alt="${altText}" height="165">`;
+            }
+        }
+
+        let markdown = logoMarkdown ? `<br>\n\n<p align="center">\n ${logoMarkdown}\n</p>\n\n` : '';
+        markdown += `<h3 align="center">${title}${subtitle ? ` | ${subtitle}` : ''}</h3>\n\n<p align="center">\n`;
+
+        if (description) {
+            markdown += `${description}\n`;
+        }
+
+        if (siteUrl) {
+            markdown += ` <br>\n <a href="${siteUrl}"><strong>Try it Online »</strong></a>\n`;
+        }
+
+        markdown += `</p>\n\n___\n`;
 
         if (features.length) {
             markdown += `\n### Features\n` + features.map(f => `- ${f}`).join("\n") + "\n\n---\n\n";
         }
 
         if (planned.length) {
-            markdown += `\n### Planned features:\n` + planned.map(p => `- [ ] ${p}`).join("\n") + "\n\n---\n\n";
+            markdown += `\n### Planned features:\n` + planned.map(p => `- [ ] ${p}`).join("\n") + "\n\n_Feel free to submit pull requests!_\n\n---\n\n";
         }
 
-        markdown += `\n![Project Image](https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoLight.png?raw=true)\n\n---\n\n`;
+        //add demo/example images within
+        //markdown += `\n![Project Image](https://github.com/ssambender/WebInstax/blob/main/WebInstaxLogoLight.png?raw=true)\n\n---\n\n`;
 
         if (bugs.length) {
             markdown += `\n### Known bugs:\n` + bugs.map(b => `- [ ] ${b}`).join("\n") + "\n\n_Please report any bugs you find!_\n\n---\n\n";
