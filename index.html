@@ -43,6 +43,8 @@
         #output {
             min-height: 500px;
             color: #9198a1;
+            box-sizing: border-box;
+            padding: 8px;
         }
 
         input, #output, button {
@@ -78,6 +80,14 @@
             width: 35%;
             padding-right: 24px;
             visibility: hidden;
+        }
+
+        .inputrow {
+            display: flex;
+        }
+        .inputrow button {
+            margin-top: 2px;
+            margin-left: 8px;
         }
 
         @media all and (orientation: portrait) {
@@ -117,14 +127,14 @@
     <label>Title: <input type="text" id="title" autocomplete="off"></label>
     <label>Subtitle: <input type="text" id="subtitle" autocomplete="off"></label>
     <label>Short Description: <input type="text" id="description" autocomplete="off"></label>
-    <label>Site URL: <input type="text" id="siteurl" autocomplete="off"></label>
+    <label>Site URL: <div class="inputrow"><input type="text" id="siteurl" autocomplete="off"><button onclick="pasteTo('siteurl')">paste</button></div></label>
 
     <hr>
 
     <h3>Logo Images</h3>
     <br><i style="color: #9198a1;">(If only one image is provided, it will be used for both light & dark mode)</i><br><br>
-    <label>Light Mode Logo URL: <input type="text" id="logoLight" autocomplete="off"></label>
-    <label>Dark Mode Logo URL: <input type="text" id="logoDark" autocomplete="off"></label>
+    <label>Light Mode Logo URL: <div class="inputrow"><input type="text" id="logoLight" autocomplete="off"><button onclick="pasteTo('logoLight')">paste</button></div></label>
+    <label>Dark Mode Logo URL: <div class="inputrow"><input type="text" id="logoDark" autocomplete="off"><button onclick="pasteTo('logoDark')">paste</button></div></label>
 
     <hr>
 
@@ -164,9 +174,11 @@
         <button id="copybutton" onclick="copyMarkdown()">
             <div style="padding: 4px">Copy to Clipboard</div>
         </button>
+
+        <div id="copiedmessage" style="display: none; justify-content: center; align-items: center;">Copied to clipboard!</div>
     </div>
 
-    <textarea id="output" readonly></textarea>
+    <textarea id="output" readonly placeholder="Nothing here yet, try generating with the button above :)"></textarea>
 </div>
 <div id="rightSec">.md preview</div>
 
@@ -208,6 +220,21 @@
         const output = document.getElementById("output");
         output.select();
         document.execCommand("copy");
+
+        document.getElementById('copiedmessage').style.display = "flex";
+        setTimeout(function(){
+            document.getElementById('copiedmessage').style.display = "none";
+        }, 1000);
+    }
+
+    async function pasteTo(inputId) {
+        try {
+            const text = await navigator.clipboard.readText();
+            document.getElementById(inputId).value = text;
+            document.getElementById(inputId).focus();
+        } catch (err) {
+            console.error('Failed to read clipboard contents: ', err);
+        }
     }
 
     function generateMarkdown() {
