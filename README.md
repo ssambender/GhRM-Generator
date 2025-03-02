@@ -28,6 +28,7 @@ ___
 - [X] Add a "copy md to clipboard" button
 - [ ] Add paste buttons next to URL inputs
 - [ ] Optional checking of boxes in checklists
+- [X] Optimized for mobile
 
 _Feel free to submit pull requests!_
 
