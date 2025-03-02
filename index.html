@@ -8,13 +8,18 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
             background-color: #151B23;
             color: #d1d7e0;
+            display: flex;
+            margin: 0;
+            justify-content: space-between;
+        }
+        *::selection {
+            background: rgba(130, 130, 130, 0.4);
         }
         textarea {
             width: 100%;
-            height: 200px;
+            resize: none;
         }
         input, button {
             display: block;
@@ -36,7 +41,7 @@
         }
 
         #output {
-            min-height: 400px;
+            min-height: 500px;
             color: #9198a1;
         }
 
@@ -52,65 +57,118 @@
         hr {
             margin-top: 16px;
             border: solid 1px #212830;
+            width: 100%;
+        }
+
+        #copybutton {
+            display: none;
+        }
+
+        #inputSec {
+            display: flex;
+            flex-direction: column;
+            width: 20%;
+            padding-left: 24px;
+        }
+        #middleSec {
+            width: 35%;
+            padding-top: 10px;
+        }
+        #rightSec {
+            width: 35%;
+            padding-right: 24px;
+            visibility: hidden;
+        }
+
+        @media all and (orientation: portrait) {
+            body {
+                flex-direction: column;
+            }
+            #inputSec {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            #middleSec {
+                padding-left: 24px;
+                width: 70%;
+                box-sizing: border-box;
+                padding-bottom: 20px;
+            }
+            #rightSec {
+                display: none;
+            }
+            #output {
+                min-height: 100px;
+            }
         }
     </style>
 </head>
 <body>
-<h2>GitHub README Generator</h2>
 
-<div style="color: #9198a1;">Simple README generator for GitHub projects.<br><br>
-    Fill out as many or as few of the sections as desired,<br>
-    any unused sections will be omitted from final page.
+<div id="inputSec">
+    <h2>GitHub README Generator</h2>
+
+    <div style="color: #9198a1;">Simple README generator for GitHub projects.<br><br>
+        Fill out as many or as few of the sections as desired,<br>
+        any unused sections will be omitted from final page.
+    </div>
+    <br>
+
+    <label>Title: <input type="text" id="title" autocomplete="off"></label>
+    <label>Subtitle: <input type="text" id="subtitle" autocomplete="off"></label>
+    <label>Short Description: <input type="text" id="description" autocomplete="off"></label>
+    <label>Site URL: <input type="text" id="siteurl" autocomplete="off"></label>
+
+    <hr>
+
+    <h3>Logo Images</h3>
+    <br><i style="color: #9198a1;">(If only one image is provided, it will be used for both light & dark mode)</i><br><br>
+    <label>Light Mode Logo URL: <input type="text" id="logoLight" autocomplete="off"></label>
+    <label>Dark Mode Logo URL: <input type="text" id="logoDark" autocomplete="off"></label>
+
+    <hr>
+
+    <h3>Features</h3>
+    <div id="features"></div>
+
+    <hr>
+
+    <h3>Planned Features</h3>
+    <div id="planned"></div>
+
+    <hr>
+
+    <h3>Known Bugs</h3>
+    <div id="bugs"></div>
+
+    <hr>
+
+    <h3>Libraries Used</h3>
+    <div id="libraries"></div>
+
+    <h3>Fonts Used</h3>
+    <div id="fonts"></div>
+
+    <h3>Assets Used</h3>
+    <div id="assets"></div>
+
+    <h3>Special Thanks</h3>
+    <div id="thanks"></div>
 </div>
-<br>
+<div id="middleSec">
+    <div style="display: flex; gap: 10px;">
+        <button onclick="generateMarkdown()">
+            <div style="padding: 4px">Generate Markdown</div>
+        </button>
 
-<label>Title: <input type="text" id="title" autocomplete="off"></label>
-<label>Subtitle: <input type="text" id="subtitle" autocomplete="off"></label>
-<label>Short Description: <input type="text" id="description" autocomplete="off"></label>
-<label>Site URL: <input type="text" id="siteurl" autocomplete="off"></label>
+        <button id="copybutton" onclick="copyMarkdown()">
+            <div style="padding: 4px">Copy to Clipboard</div>
+        </button>
+    </div>
 
-<hr>
-
-<h3>Logo Images</h3>
-<br><i style="color: #9198a1;">(If only one image is provided, it will be used for both light & dark mode)</i><br><br>
-<label>Light Mode Logo URL: <input type="text" id="logoLight" autocomplete="off"></label>
-<label>Dark Mode Logo URL: <input type="text" id="logoDark" autocomplete="off"></label>
-
-<hr>
-
-<h3>Features</h3>
-<div id="features"></div>
-
-<hr>
-
-<h3>Planned Features</h3>
-<div id="planned"></div>
-
-<hr>
-
-<h3>Known Bugs</h3>
-<div id="bugs"></div>
-
-<hr>
-
-<h3>Libraries Used</h3>
-<div id="libraries"></div>
-
-<h3>Fonts Used</h3>
-<div id="fonts"></div>
-
-<h3>Assets Used</h3>
-<div id="assets"></div>
-
-<h3>Special Thanks</h3>
-<div id="thanks"></div>
-
-<hr>
-
-<button onclick="generateMarkdown()">
-    <div style="padding: 4px">Generate Markdown</div>
-</button>
-<textarea id="output" readonly></textarea>
+    <textarea id="output" readonly></textarea>
+</div>
+<div id="rightSec">.md preview</div>
 
 <script>
     function addInput(sectionId) {
@@ -143,6 +201,13 @@
         return Array.from(document.getElementById(sectionId).querySelectorAll("input"))
             .map(input => input.value.trim())
             .filter(value => value);
+    }
+
+    function copyMarkdown() {
+        //generateMarkdown();
+        const output = document.getElementById("output");
+        output.select();
+        document.execCommand("copy");
     }
 
     function generateMarkdown() {
@@ -219,6 +284,11 @@
         }
 
         document.getElementById("output").value = markdown;
+
+        document.getElementById('output').style.height = "";
+        document.getElementById('output').style.height = document.getElementById('output').scrollHeight + "px";
+
+        document.getElementById("copybutton").style.display = "flex";
     }
 
     addInput("features");
